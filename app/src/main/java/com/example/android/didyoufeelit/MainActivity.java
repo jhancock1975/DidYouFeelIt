@@ -31,8 +31,7 @@ public class MainActivity extends AppCompatActivity {
     /** URL for earthquake data from the USGS dataset */
     private static final String USGS_REQUEST_URL =
             "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2016-01-01&endtime=2016-05-02&minfelt=50&minmagnitude=5";
-
-    private Event earthquake;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,17 +58,21 @@ public class MainActivity extends AppCompatActivity {
 
     private class DownloadFilesTask extends AsyncTask<String, Void, Event> {
         protected Event doInBackground(String... urls) {
+            if (urls == null || urls.length < 1 || urls[0] == null){
+                return null;
+            }
 
+            Event quake = Utils.fetchEarthquakeData(urls[0]);
 
-            earthquake = Utils.fetchEarthquakeData(urls[0]);
-
-            return earthquake;
+            return quake;
         }
 
         @Override
         protected void onPostExecute(Event event) {
-            // Update the information displayed to the user.
-            updateUi(earthquake);
+            if (event  != null) {
+                // Update the information displayed to the user.
+                updateUi(event);
+            }
         }
     }
 }
